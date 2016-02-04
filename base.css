@@ -106,13 +106,22 @@ p {
 }
 
 #selected h1 {
-  font-size: 20px;
+  font-size: 18px;
   margin: 0px;
-  line-height: 20px;
+  /*line-height: 18px;*/
   font-weight: bold;
+/*  white-space: nowrap;
+*/  /* overflow: hidden; */
+  text-overflow: ellipsis;
+}
+
+#selected h2 {
+  font-size: 14px;
+  margin: 0px;
+/*  line-height: 18px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: ellipsis;*/
 }
 
 .hide,

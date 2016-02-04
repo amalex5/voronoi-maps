@@ -24,22 +24,27 @@ voronoiMap = function(map, url, initialSelections) {
   var selectPoint = function() {
     d3.selectAll('.selected').classed('selected', false);
 
+
     var cell = d3.select(this),
         point = cell.datum();
+    console.log(point)
 
     lastSelectedPoint = point;
     cell.classed('selected', true);
 
-    d3.select('#selected h1')
+    d3.select('#selected')
       .html('')
-      .append('a')
+      .append('h1')
         .text(point.name)
-        .attr('href', point.url)
-        .attr('target', '_blank')
+    d3.select('#selected')
+      .append('h2')
+        .text(point.address)
+      
+
   }
 
   var drawPointTypeSelection = function() {
-    showHide('#selections')
+    //showHide('#selections')
     labels = d3.select('#toggles').selectAll('input')
       .data(pointTypes.values())
       .enter().append("label");
@@ -71,7 +76,8 @@ voronoiMap = function(map, url, initialSelections) {
   var pointsFilteredToSelectedTypes = function() {
     var currentSelectedTypes = d3.set(selectedTypes());
     return points.filter(function(item){
-      return currentSelectedTypes.has(item.type);
+      return currentSelectedTypes.has(item.type) && !(isNaN(item.longitude) || isNaN(item.latitude));
+      // the last two conditions are to filter out malformed data, which breaks the whole thing
     });
   }
 
@@ -86,6 +92,10 @@ voronoiMap = function(map, url, initialSelections) {
     }, 0);
   }
 
+  String.prototype.toTitleCase = function () {
+    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+};
+
   var draw = function() {
     d3.select('#overlay').remove();
 
@@ -96,7 +106,8 @@ voronoiMap = function(map, url, initialSelections) {
         drawLimit = bounds.pad(0.4);
 
     filteredPoints = pointsFilteredToSelectedTypes().filter(function(d) {
-      var latlng = new L.LatLng(d.latitude, d.longitude);
+
+      var latlng = new L.LatLng(d.latitude, d.longitude);      
 
       if (!drawLimit.contains(latlng)) { return false };
 
@@ -108,6 +119,8 @@ voronoiMap = function(map, url, initialSelections) {
 
       d.x = point.x;
       d.y = point.y;
+      //console.log(d)
+
       return true;
     });
 
@@ -142,7 +155,7 @@ voronoiMap = function(map, url, initialSelections) {
 
     svgPoints.append("circle")
       .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-      .style('fill', function(d) { return '#' + d.color } )
+      .style('fill', function(d) { return d.color } )
       .attr("r", 2);
   }
 
@@ -156,11 +169,28 @@ voronoiMap = function(map, url, initialSelections) {
   showHide('#about');
 
   map.on('ready', function() {
-    d3.csv(url, function(csv) {
-      points = csv;
+    d3.json(url, function(json) {
+
+
+      json.data.forEach(function(elt){
+        points.push({
+          id: elt[0],
+          name: elt[8].toTitleCase(),
+          address: elt[10].toTitleCase() + ", " + elt[11].toTitleCase() + ' ' + elt[12] + ' ' + elt[13],
+          latitude: parseFloat(elt[17]),
+          longitude: parseFloat(elt[18]),
+          color: 'red',
+          type: "fire department"
+
+        })
+      })
+
+
       points.forEach(function(point) {
         pointTypes.set(point.type, {type: point.type, color: point.color});
       })
+
+
       drawPointTypeSelection();
       map.addLayer(mapLayer);
     })

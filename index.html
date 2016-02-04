@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="base.css" rel="stylesheet" />
+<link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.css' rel='stylesheet' />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New York Fire Departments</title>
+</head>
+<body>
+  <div id='map'>
+  </div>
+   <!-- <div id='selections' class="selections"> 
+    <a href='#' class="show">Choose what supermarkets to display</a>-->
+    <div class='content'>
+      <a href='#' class="hide">Hide</a>
+      <div id="toggles">
+      </div> 
+    </div>
+  </div>
+  <div id='loading'>
+  </div>
+  <div id='selected'>
+    <h1>Explore New York State fire departments!</h1>
+  </div>
+  <div id='about'>
+    <a href='#' class="show">About</a>
+    <p class='content'>
+      Voronoi diagram of all the fire departments in New York state; originally by <a href="http://chriszetter.com">Chris Zetter</a>, with modifications by <a href=http://www.andrusia.com>Andrew Alexander</a>; data from <a href=https://data.ny.gov/Public-Safety/Fire-Department-Directory-for-New-York-State/qfsu-zcpv>data.ny.gov</a>; maps copyright
+      <a href='https://www.mapbox.com/about/maps/' target='_blank'>Mapbox and OpenStreetMap</a>.
+      <a href='#' class="hide">Hide</a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
+  <script src="https://api.tiles.mapbox.com/mapbox.js/v2.2.1/mapbox.js"></script>
+  <script src="voronoi_map.js"></script>
+  <script>L.mapbox.accessToken = 'pk.eyJ1IjoiYW1oYSIsImEiOiJjaWs4aGljM2swMmxhdHprd2g0ZmZ2ZGUyIn0.KKJOYsu__xJKt7tUeCAUAQ';
+
+  map = L.mapbox.map('map', 'amha.p2j63jgf')
+      .fitBounds([[42.132 , -73.048], [43.707 , -78.815]]);
+    url = 'https://data.ny.gov/api/views/qfsu-zcpv/rows.json';
+    initialSelection = d3.set(['fire department']);
+    voronoiMap(map, url, initialSelection);
+  </script>
+</body>
+</html>
